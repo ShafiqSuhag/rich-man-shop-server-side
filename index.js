@@ -462,6 +462,43 @@ async function run() {
     //**************************************************************************** MAKE ADMIN  */
 
 
+    //**************************************************************************** REVIEW USER  */
+    const reviewsCollection = db.collection("reviews");
+    // ######## 
+    // GET ALL ORDERS
+    // ######## 
+    app.get('/reviews', async (req, res) => {
+
+      const limit = parseInt(req.query.size)
+      const pageNumber = parseInt(req.query.page)
+      console.log("limit - pageNumber", limit, pageNumber)
+      const query = {}
+      const options = {
+        skip: pageNumber * limit || 0,
+        limit: limit || 0
+      }
+      const count = await reviewsCollection.estimatedDocumentCount();
+
+      // const count = await cursor.count();
+      const cursor = reviewsCollection.find(query, options)
+
+      const productList = await cursor.toArray()
+      if (pageNumber) {
+
+      }
+      else {
+
+      }
+      res.json({
+        count: count,
+        productList: productList,
+
+      })
+    })
+    //**************************************************************************** REVIEW USER  */
+
+
+
 
 
 
