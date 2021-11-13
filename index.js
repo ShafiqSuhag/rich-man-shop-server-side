@@ -405,6 +405,64 @@ async function run() {
 
 
 
+    //**************************************************************************** MAKE ADMIN  */
+    const userRoleCollection = db.collection("user-role");
+    app.post('/make-admin', async (req, res) => {
+      console.log("make admin")
+      console.log(req.body, typeof req.body)
+      console.log(req.body.email, typeof req.body.email)
+
+      // const
+      const filter = { email: req.body.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          email: req.body.email ,
+          role: "admin"
+        },
+      };
+      const response = await userRoleCollection.updateOne(filter, updateDoc, options);
+      console.log(response)
+
+      let result = {}
+      if(response.upsertedCount>0){
+        result["success"]=true
+      }else{
+        result["success"]=false
+      }
+
+      res.send(result)
+    })
+
+    // find admin 
+
+    app.post('/find-user-role', async (req, res) => {
+      console.log("user role")
+      console.log(req.body, typeof req.body)
+      // console.log(req.body.email, typeof req.body.email)
+      const query = { email: req.body.email };
+      const options = {}
+      const countUserRole = await userRoleCollection.countDocuments(query);
+      const findUserRole = await userRoleCollection.findOne(query, options);
+
+      let isAdmin = false
+      console.log(findUserRole)
+      console.log(countUserRole)
+      if(findUserRole?.role==="admin"){
+        isAdmin = true; 
+      }
+      // const
+      res.send({isAdmin:isAdmin})
+    })
+
+
+    // find admin 
+
+    
+    //**************************************************************************** MAKE ADMIN  */
+
+
+
 
 
   }
