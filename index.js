@@ -1,10 +1,10 @@
 const express = require('express')
 const app = express()
 var cors = require('cors')
+app.use(cors())
+require('dotenv').config()
 const port = process.env.PORT || 5000
 const { MongoClient } = require('mongodb');
-require('dotenv').config()
-app.use(cors())
 app.use(express.json())
 const { ObjectId } = require('mongodb');
 
@@ -14,7 +14,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World 2!')
 })
 
 app.listen(port, () => {
@@ -35,7 +35,7 @@ async function run() {
     // connection
     await client.connect()
     const db = client.db(process.env.DB_NAME);
-    const tourCollection = db.collection("tours");
+    // const tourCollection = db.collection("tours");
     console.log("connnection successfull")
 
     // index 
@@ -136,6 +136,39 @@ async function run() {
       })
     })
 
+     // find servier 
+     app.post('/product-details', async (req, res) => {
+      console.log('inside product-details req ')
+      console.log(req.body, typeof req.body)
+      const doc = req.body || {}
+      // res.send()
+      // return     
+      if (doc) {
+        // const result = await tourCollection.insertOne(doc);
+        // console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        const query = { _id: ObjectId(doc.id) }
+        const options = {}
+        const cursor = productCollection.find(query, options);
+        const details = await cursor.toArray()
+        res.send({
+          success: true,
+          msg: `Result Foound`,
+          data: details
+        })
+      } else {
+        res.send(
+          {
+            success: false,
+            msg: `No serach value found`,
+            data: []
+          }
+        )
+      }
+
+
+    })
+    // find
+
     // delete 
 
 
@@ -207,7 +240,7 @@ async function run() {
       if (result.modifiedCount > 0) {
         res.json({
           success: true
-        
+
 
         })
       }
@@ -219,7 +252,7 @@ async function run() {
       }
 
     })
-    
+
     // UPDATE STATUS ORDERS
 
 
@@ -228,7 +261,7 @@ async function run() {
     //**************************************************************************** ORDERS  */
 
 
-    
+
     //**************************************************************************** PRODUCTS  */
     // collection name 
     const productCollection = db.collection("products");
@@ -324,6 +357,9 @@ async function run() {
       })
     })
 
+
+
+    // Heroku deploy
     // delete 
 
 
@@ -359,7 +395,7 @@ async function run() {
     })
     // ######## 
     // UPDATE STATUS ORDERS
-    
+
     // UPDATE STATUS ORDERS
 
 
