@@ -52,7 +52,7 @@ async function run() {
       // res.send()
       // return     
       if (doc) {
-        const result = await orderCollection.insertOne(doc);
+        const result = await orderCollection.insertOne(doc.data);
         console.log(`A document was inserted with the _id: ${result.insertedId}`);
         res.send({
           success: true,
@@ -70,9 +70,44 @@ async function run() {
     // ######## 
     // GET MY ORDERS
     // ######## 
-    app.get('/orders/:id', async (req, res) => {
-      const id = req.params.id
-      console.log('inside find my-orders', id, typeof id)
+    app.get('/orders/:email', async (req, res) => {
+      const email = req.params.email
+      console.log('inside find my-orders', email, typeof email)
+      // res.send('Hello orders 2' + email)
+      const limit = parseInt(req.query.size)
+      const pageNumber = parseInt(req.query.page)
+      console.log("limit - pageNumber", limit, pageNumber)
+      // const _id = ObjectId(id);
+      // Query for a movie that has title "Annie Hall"
+      const query = { email: email };
+
+      const options = {
+        skip: pageNumber * limit || 0,
+        limit: limit || 0
+      }
+      const count = await orderCollection.estimatedDocumentCount();
+
+      // const count = await cursor.count();
+      const cursor = orderCollection.find(query, options)
+
+      const orderList = await cursor.toArray()
+      if (pageNumber) {
+
+      }
+      else {
+
+      }
+      res.json({
+        count: count,
+        orderList: orderList,
+
+      })
+    })
+    app.get('/my-orders/:email', async (req, res) => {
+
+
+      const email = req.params.email
+      console.log('inside find my-orders', email, typeof email)
       // res.send(id)
       // return;
       const limit = parseInt(req.query.size)
@@ -80,7 +115,7 @@ async function run() {
       console.log("limit - pageNumber", limit, pageNumber)
       // const _id = ObjectId(id);
       // Query for a movie that has title "Annie Hall"
-      const query = { userId: id };
+      const query = { email: email };
 
       const options = {
         skip: pageNumber * limit || 0,
@@ -136,8 +171,8 @@ async function run() {
       })
     })
 
-     // find servier 
-     app.post('/product-details', async (req, res) => {
+    // find servier 
+    app.post('/product-details', async (req, res) => {
       console.log('inside product-details req ')
       console.log(req.body, typeof req.body)
       const doc = req.body || {}
@@ -172,7 +207,7 @@ async function run() {
     // delete 
 
 
-    app.delete('/orders', async (req, res) => {
+    app.delete('/my-orders', async (req, res) => {
       console.log('inside delete req ')
       console.log(req.body, typeof req.body)
       const doc = req.body || {}
@@ -206,7 +241,7 @@ async function run() {
     // UPDATE STATUS ORDERS
     app.get('/update-order-status/:orderid', async (req, res) => {
       const orderid = req.params.orderid
-      console.log('inside find update find -orders', orderid, typeof id)
+      console.log('inside find update find -orders', orderid, typeof orderid)
       // res.send(id)
       // return;
       const limit = parseInt(req.query.size)
@@ -215,22 +250,22 @@ async function run() {
       const orderObjectId = ObjectId(orderid);
       console.log('object ', orderObjectId)
       // Query for a movie that has title "Annie Hall"
-      const query = { _id: orderObjectId };
+      // const query = { _id: orderObjectId };
 
       // const options = {
       //   skip: pageNumber * limit || 0,
       //   limit: limit || 0
       // }
-      const count = await orderCollection.estimatedDocumentCount();
+      // const count = await orderCollection.estimatedDocumentCount();
 
       // const count = await cursor.count();
-      const cursor = await orderCollection.findOne(query)
+      // const cursor = await orderCollection.findOne(query)
       const filter = { _id: orderObjectId };
-      const options = { upsert: true };
+      const options = {  };
 
       const updateDoc = {
         $set: {
-          orderStatus: 'active'
+          status: 'active'
         },
       };
       const result = await orderCollection.updateOne(filter, updateDoc, options);
@@ -417,7 +452,7 @@ async function run() {
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          email: req.body.email ,
+          email: req.body.email,
           role: "admin"
         },
       };
@@ -425,10 +460,10 @@ async function run() {
       console.log(response)
 
       let result = {}
-      if(response.upsertedCount>0){
-        result["success"]=true
-      }else{
-        result["success"]=false
+      if (response.upsertedCount > 0) {
+        result["success"] = true
+      } else {
+        result["success"] = false
       }
 
       res.send(result)
@@ -448,17 +483,17 @@ async function run() {
       let isAdmin = false
       console.log(findUserRole)
       console.log(countUserRole)
-      if(findUserRole?.role==="admin"){
-        isAdmin = true; 
+      if (findUserRole?.role === "admin") {
+        isAdmin = true;
       }
       // const
-      res.send({isAdmin:isAdmin})
+      res.send({ isAdmin: isAdmin })
     })
 
 
     // find admin 
 
-    
+
     //**************************************************************************** MAKE ADMIN  */
 
 
