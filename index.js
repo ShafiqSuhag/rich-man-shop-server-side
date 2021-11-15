@@ -475,7 +475,7 @@ async function run() {
       console.log("user role")
       console.log(req.body, typeof req.body)
       // console.log(req.body.email, typeof req.body.email)
-      const query = { email: req.body.email };
+      const query = { email: req?.body?.email };
       const options = {}
       const countUserRole = await userRoleCollection.countDocuments(query);
       const findUserRole = await userRoleCollection.findOne(query, options);
@@ -529,6 +529,28 @@ async function run() {
         productList: productList,
 
       })
+    })
+    app.post('/r', async (req, res) => {
+      console.log('inside reviews ')
+      console.log(req.body, typeof req.body)
+      const doc = req.body || {}
+      // res.send()
+      // return     
+      if (doc) {
+        const result = await reviewsCollection.insertOne(doc);
+        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        res.send({
+          success: true,
+          msg: `A document was inserted with the _id: ${result.insertedId}`
+        })
+      } else {
+        res.send(
+          {
+            success: false,
+            msg: `Failed to post`
+          }
+        )
+      }
     })
     //**************************************************************************** REVIEW USER  */
 
